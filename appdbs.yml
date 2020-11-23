@@ -1,0 +1,25 @@
+---
+- name: deploy postgres
+  hosts: appdbs
+  gather_facts: false
+  become: true
+  tasks:
+  - name: install postgres
+    package:
+      name: postgresql-server
+      state: present
+
+  - name: initilize postgres
+    command: postgresql-setup initdb
+    run_once: true
+
+  - name: initilize postgres some more
+    command: chkconfig postgresql on
+    run_once: true
+
+  - name: enable postgres at boot
+    service:
+      name: postgresql
+      enabled: yes
+      state: started
+    register: postgres_service
