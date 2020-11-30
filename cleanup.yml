@@ -1,36 +1,66 @@
 ---
-- name: cleanup
-  hosts: all
+- name: Cleanup Frontends
+  hosts: frontends
+  tags: cleanup_frontends
   gather_facts: false
   become: true
-  vars:
-    three_tier_packages:
-      - httpie
-      - python-pip
-      - haproxy
-      - tomcat
-      - postgresql-server
 
   tasks:
-    - name: reverse the enabling of sudo without tty for some ansible commands
-      replace:
-        path: /etc/sudoers
-        regexp: 'Defaults\s*!requiretty'
-        replace: '^Defaults requiretty'
-        backup: yes
+  - name: Stop HAProxy
+    service:
+      name: haproxy
+      enabled: no
+      state: stopped
+    register: haproxy_service
 
-    - name: Remove the repo file
-      file:
-        state: absent
-        path: /etc/yum.repos.d/open_three-tier-app.repo
+  - name: Uninstall HAProxy package
+    package:
+      name: haproxy
+      state: absent
 
-    - name: Remove base tools and three tier app packages
-      yum:
-        name: "{{ three_tier_packages }}"
-        state: absent
+  - name: Delete HAProxy directory
+    file:
+      state: absent
+      path: /etc/haproxy/
 
-    - name: Remove index.html
-      file:
-        path: /tmp/index.html
-        state: absent
-...
+- name: Cleanup Apps
+  hosts: apps
+  tags: cleanup_apps
+  gather_facts: false
+  become: true
+
+  tasks:
+  - name: Stop tomcat
+    service:
+      name: tomcat
+      enabled: yes
+      state: stopped
+
+  - name: Remove tomcat
+    package:
+      name: tomcat
+      state: absent
+
+  - name: Delete tomcat directory
+    file:
+      state: absent
+      path: /usr/share/tomcat/webapps/ROOT/
+
+- name: Cleanup DB
+  hosts: appdbs
+  tags: cleanup_appdbs
+  gather_facts: false
+  become: true
+
+  tasks:
+  - name: Stop postgres
+    service:
+      name: postgresql.service
+      enabled: no
+      state: stopped
+    register: postgres_service
+
+  - name: Uninstall postgres
+    package:
+      name: postgresql-server
+      state: absent

@@ -1,9 +1,12 @@
 ---
-- name: Install Frontends
-  import_playbook: frontends.yml
-
 - name: Install Appdbs
   import_playbook: appdbs.yml
+  tags: db
 
 - name: Install Apps
   import_playbook: apps.yml
+  tags: app
+
+- name: Install Frontends
+  import_playbook: frontends.yml
+  tags: frontend
