@@ -3,23 +3,22 @@
   hosts: appdbs
   gather_facts: false
   become: true
-  tasks:
+  vars:
+    postgres_service: postgresql.service
 
+  tasks:
   - name: Install postgres
     package:
       name: postgresql-server
       state: present
-  
+
   - name: Enable postgres at boot
     service:
-      name: postgresql.service
+      name: "{{ postgres_service }}"
       enabled: yes
-      state: started
-    register: postgres_service
+    register: postgres_status
+    ignore_errors: yes
 
-  - name: Service state
-    debug: msg="{{ postgres_service.status.ActiveState }}"
-  
   - name: Initilize postgres
     block:
       - name: Initilize postgres
@@ -28,5 +27,14 @@
       - name: Check postgres config
         command: chkconfig postgresql on
     when:
-      - postgres_service.status.ActiveState != 'active'
-      - postgres_service.enable == 'true'
+      - postgres_status.status.ActiveState != 'active'
+  
+  - name: Postgres service state
+    debug: msg="{{ postgres_status.status.ActiveState }}"
+  
+  - name: Start postgres
+    service:
+      name: "{{ postgres_service }}"
+      enabled: yes
+      state: started
+    register: postgres_status

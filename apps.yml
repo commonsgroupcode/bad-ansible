@@ -3,6 +3,8 @@
   hosts: apps
   gather_facts: false
   become: true
+  vars:
+    tomcat_dir: /usr/share/tomcat/webapps/ROOT
 
   tasks:
   - name: install tomcat
@@ -12,7 +14,7 @@
 
   - name: create ansible tomcat directory
     file:
-      path: /usr/share/tomcat/webapps/ROOT
+      path: "{{ tomcat_dir }}"
       state: directory
 
   - name: enable tomcat at boot
@@ -24,4 +26,4 @@
   - name: copy static index.html to tomcat webapps/ansible/index.html
     template:
       src: index.html.apps
-      dest: /usr/share/tomcat/webapps/ROOT/index.html
+      dest: "{{ tomcat_dir }}/index.html"
