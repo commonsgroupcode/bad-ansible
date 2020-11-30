@@ -5,21 +5,21 @@ all:
     frontends:
       hosts:
         frontend1:
-          ansible_host: 10.0.0.127
-          # ansible_host: frontend1."{{ GUID }}".internal
+          ansible_host: frontend1.{{ GUID }}.internal
+          # ansible_host: 10.0.0.127
     apps:
       hosts:
         app1:
-          ansible_host: 10.0.0.195
-          # ansible_host: app1."{{ GUID }}".internal
+          ansible_host: app1.{{ GUID }}.internal
+          # ansible_host: 10.0.0.195
         app2:
-          ansible_host: 10.0.0.164
-          # ansible_host: app2."{{ GUID }}".internal
+          ansible_host: app2.{{ GUID }}.internal
+          # ansible_host: 10.0.0.164
     appdbs:
       hosts:
         appdb1:
-          ansible_host: 10.0.0.60
-          # ansible_host: appdb1."{{ GUID }}".internal
+          ansible_host: appdb1.{{ GUID }}.internal
+          # ansible_host: 10.0.0.60
     internal:
       children:
         frontends:
