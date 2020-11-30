@@ -26,6 +26,7 @@
 
       - name: Check postgres config
         command: chkconfig postgresql on
+    ignore_errors: yes
     when:
       - postgres_status.status.ActiveState != 'active'
   

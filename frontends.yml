@@ -3,6 +3,9 @@
   hosts: frontends
   gather_facts: false
   become: true
+  vars:
+    haproxy_listen_port: 80
+    tomcat_listen_port: 8080
 
   tasks:
   - name: install HAProxy
